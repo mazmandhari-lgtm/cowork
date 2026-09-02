@@ -1,31 +1,36 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { AbayaArt } from "./AbayaArt";
 import { Button, ButtonLink } from "./Button";
 import { useCart } from "@/lib/cart-context";
 import { formatPrice, type Product } from "@/lib/products";
 
 export function ProductDetail({ product }: { product: Product }) {
-  const [colorIndex, setColorIndex] = useState(0);
   const [size, setSize] = useState(product.sizes[Math.floor(product.sizes.length / 2)]);
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
   const { addItem } = useCart();
   const router = useRouter();
-  const color = product.colors[colorIndex];
 
   function handleAdd() {
-    addItem(product, color.name, color.hex, size, qty);
+    addItem(product, size, qty);
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
   }
 
   return (
     <div className="mx-auto grid max-w-6xl grid-cols-1 gap-14 px-5 py-14 sm:px-8 lg:grid-cols-2 lg:py-20">
-      <div className="flex items-center justify-center rounded-3xl bg-gradient-to-b from-neutral-200 to-neutral-100 py-16 dark:from-neutral-900 dark:to-neutral-950">
-        <AbayaArt hex={color.hex} className="h-[420px] w-auto drop-shadow-2xl transition-all duration-500" />
+      <div className="relative aspect-[4/5] overflow-hidden rounded-3xl bg-neutral-100 dark:bg-neutral-950">
+        <Image
+          src={product.image}
+          alt={product.name}
+          fill
+          sizes="(max-width: 1024px) 100vw, 50vw"
+          className="object-cover object-[60%_center]"
+          priority
+        />
       </div>
 
       <div>
@@ -42,39 +47,14 @@ export function ProductDetail({ product }: { product: Product }) {
 
         <div className="mt-5 flex items-center gap-3">
           <span className="text-[24px] font-bold">{formatPrice(product.price)}</span>
-          {product.compareAtPrice && (
-            <span className="text-[16px] text-neutral-400 line-through">
-              {formatPrice(product.compareAtPrice)}
-            </span>
-          )}
         </div>
 
         <p className="mt-6 text-[15px] leading-8 text-neutral-600 dark:text-neutral-300">
           {product.description}
         </p>
 
-        {/* Color selector */}
-        <div className="mt-8">
-          <p className="text-[13px] font-semibold">اللون: {color.name}</p>
-          <div className="mt-3 flex gap-2">
-            {product.colors.map((c, i) => (
-              <button
-                key={c.name}
-                onClick={() => setColorIndex(i)}
-                className={`h-9 w-9 rounded-full ring-2 transition-all ${
-                  i === colorIndex ? "ring-neutral-950 dark:ring-white" : "ring-transparent"
-                }`}
-                style={{ backgroundColor: c.hex }}
-                aria-label={c.name}
-              >
-                <span className="sr-only">{c.name}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-
         {/* Size selector */}
-        <div className="mt-7">
+        <div className="mt-8">
           <p className="text-[13px] font-semibold">المقاس</p>
           <div className="mt-3 flex flex-wrap gap-2">
             {product.sizes.map((s) => (
@@ -119,7 +99,7 @@ export function ProductDetail({ product }: { product: Product }) {
 
         <button
           onClick={() => {
-            addItem(product, color.name, color.hex, size, qty);
+            addItem(product, size, qty);
             router.push("/checkout");
           }}
           className="mt-3 w-full rounded-full border border-neutral-300 py-3 text-[15px] font-medium transition-colors hover:border-neutral-950 dark:border-neutral-700 dark:hover:border-white"

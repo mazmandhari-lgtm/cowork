@@ -8,10 +8,7 @@ import { products, type Product } from "@/lib/products";
 
 const categories: Array<Product["category"] | "الكل"> = [
   "الكل",
-  "يومية",
-  "مناسبات",
-  "سفر",
-  "إحرام وصلاة",
+  ...Array.from(new Set(products.map((p) => p.category))),
 ];
 
 function ShopContent() {

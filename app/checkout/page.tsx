@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { AbayaArt } from "@/components/AbayaArt";
@@ -7,13 +8,16 @@ import { Button, ButtonLink } from "@/components/Button";
 import { useCart } from "@/lib/cart-context";
 import { formatPrice } from "@/lib/products";
 
+const FREE_SHIPPING_THRESHOLD = 40;
+const SHIPPING_FEE = 2;
+
 export default function CheckoutPage() {
   const { items, subtotal, clear } = useCart();
   const router = useRouter();
   const [placed, setPlaced] = useState(false);
   const [payment, setPayment] = useState<"card" | "cod">("card");
 
-  const shipping = subtotal >= 500 || subtotal === 0 ? 0 : 25;
+  const shipping = subtotal >= FREE_SHIPPING_THRESHOLD || subtotal === 0 ? 0 : SHIPPING_FEE;
   const total = subtotal + shipping;
 
   function handleSubmit(e: React.FormEvent) {
@@ -121,14 +125,14 @@ export default function CheckoutPage() {
           <h2 className="text-[16px] font-semibold">ملخص الطلب</h2>
           <div className="mt-4 flex flex-col gap-3">
             {items.map((item) => (
-              <div key={`${item.slug}-${item.color}-${item.size}`} className="flex items-center gap-3">
-                <div className="flex h-14 w-12 shrink-0 items-center justify-center rounded-lg bg-white dark:bg-neutral-900">
-                  <AbayaArt hex={item.colorHex} className="h-12 w-auto" />
+              <div key={`${item.slug}-${item.size}`} className="flex items-center gap-3">
+                <div className="relative h-14 w-12 shrink-0 overflow-hidden rounded-lg bg-white dark:bg-neutral-900">
+                  <Image src={item.image} alt={item.name} fill sizes="48px" className="object-cover object-[60%_center]" />
                 </div>
                 <div className="flex-1 text-[13px]">
                   <p className="font-medium">{item.name}</p>
                   <p className="text-neutral-400">
-                    {item.color} · {item.size} × {item.qty}
+                    {item.size} × {item.qty}
                   </p>
                 </div>
                 <p className="text-[13px] font-semibold">{formatPrice(item.price * item.qty)}</p>

@@ -1,5 +1,6 @@
-import { AbayaArt } from "@/components/AbayaArt";
+import Image from "next/image";
 import { Reveal } from "@/components/Reveal";
+import { products } from "@/lib/products";
 
 const values = [
   {
@@ -31,10 +32,23 @@ export default function AboutPage() {
             الاحتشام الأصيل وروح العصر.
           </p>
         </Reveal>
-        <Reveal delay={150} className="mt-14 flex gap-6">
-          <AbayaArt hex="#1c2333" className="h-64 w-auto -rotate-6" />
-          <AbayaArt hex="#111113" className="h-80 w-auto" />
-          <AbayaArt hex="#cdbfa5" className="h-64 w-auto rotate-6" />
+        <Reveal delay={150} className="mt-14 flex items-end gap-4">
+          {[products[2], products[0], products[4]].map((p, i) => (
+            <div
+              key={p.slug}
+              className={`relative w-32 overflow-hidden rounded-2xl shadow-xl sm:w-40 ${
+                i === 1 ? "h-72 sm:h-96" : "h-56 sm:h-72 opacity-90"
+              } ${i === 0 ? "-rotate-6" : i === 2 ? "rotate-6" : ""}`}
+            >
+              <Image
+                src={p.image}
+                alt={p.name}
+                fill
+                sizes="160px"
+                className="object-cover object-[60%_center]"
+              />
+            </div>
+          ))}
         </Reveal>
       </section>
 
@@ -92,7 +106,7 @@ export default function AboutPage() {
           <Reveal>
             <h2 className="text-[26px] font-bold tracking-tight">التوصيل والإرجاع</h2>
             <ul className="mt-6 flex flex-col gap-4 text-[14px] leading-7 text-neutral-600 dark:text-neutral-300">
-              <li>• توصيل مجاني للطلبات فوق 500 ر.س داخل المملكة.</li>
+              <li>• توصيل مجاني للطلبات فوق 40 ر.ع. داخل السلطنة.</li>
               <li>• مدة التوصيل من 2 إلى 5 أيام عمل حسب المدينة.</li>
               <li>• إمكانية الإرجاع أو الاستبدال خلال 14 يومًا من الاستلام.</li>
               <li>• القطعة يجب أن تكون بحالتها الأصلية مع البطاقة والتغليف.</li>
@@ -109,7 +123,7 @@ export default function AboutPage() {
           </p>
           <div className="mt-6 flex flex-col gap-2 text-[14px] text-neutral-700 dark:text-neutral-200">
             <span>support@sitr-store.com</span>
-            <span>+966 5X XXX XXXX</span>
+            <span>+968 9X XXX XXX</span>
           </div>
         </Reveal>
       </section>

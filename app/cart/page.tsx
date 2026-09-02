@@ -1,10 +1,14 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { AbayaArt } from "@/components/AbayaArt";
 import { ButtonLink } from "@/components/Button";
 import { useCart } from "@/lib/cart-context";
 import { formatPrice } from "@/lib/products";
+
+const FREE_SHIPPING_THRESHOLD = 40;
+const SHIPPING_FEE = 2;
 
 export default function CartPage() {
   const { items, removeItem, updateQty, subtotal } = useCart();
@@ -24,6 +28,8 @@ export default function CartPage() {
     );
   }
 
+  const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
+
   return (
     <div className="mx-auto max-w-5xl px-5 py-16 sm:px-8">
       <h1 className="text-[32px] font-bold tracking-tight">سلة التسوق</h1>
@@ -32,40 +38,40 @@ export default function CartPage() {
         <div className="flex flex-col gap-4 lg:col-span-2">
           {items.map((item) => (
             <div
-              key={`${item.slug}-${item.color}-${item.size}`}
+              key={`${item.slug}-${item.size}`}
               className="flex items-center gap-4 rounded-2xl border border-neutral-200 p-4 dark:border-neutral-800"
             >
               <Link
                 href={`/shop/${item.slug}`}
-                className="flex h-24 w-20 shrink-0 items-center justify-center rounded-xl bg-neutral-100 dark:bg-neutral-900"
+                className="relative h-24 w-20 shrink-0 overflow-hidden rounded-xl bg-neutral-100 dark:bg-neutral-900"
               >
-                <AbayaArt hex={item.colorHex} className="h-20 w-auto" />
+                <Image src={item.image} alt={item.name} fill sizes="80px" className="object-cover object-[60%_center]" />
               </Link>
               <div className="flex flex-1 flex-col gap-1">
                 <Link href={`/shop/${item.slug}`} className="text-[15px] font-semibold hover:underline">
                   {item.name}
                 </Link>
                 <p className="text-[13px] text-neutral-500 dark:text-neutral-400">
-                  اللون: {item.color} · المقاس: {item.size}
+                  المقاس: {item.size}
                 </p>
                 <div className="mt-2 flex items-center gap-3">
                   <div className="flex items-center rounded-full border border-neutral-300 dark:border-neutral-700">
                     <button
-                      onClick={() => updateQty(item.slug, item.color, item.size, item.qty - 1)}
+                      onClick={() => updateQty(item.slug, item.size, item.qty - 1)}
                       className="flex h-8 w-8 items-center justify-center text-base"
                     >
                       −
                     </button>
                     <span className="w-6 text-center text-[13px]">{item.qty}</span>
                     <button
-                      onClick={() => updateQty(item.slug, item.color, item.size, item.qty + 1)}
+                      onClick={() => updateQty(item.slug, item.size, item.qty + 1)}
                       className="flex h-8 w-8 items-center justify-center text-base"
                     >
                       +
                     </button>
                   </div>
                   <button
-                    onClick={() => removeItem(item.slug, item.color, item.size)}
+                    onClick={() => removeItem(item.slug, item.size)}
                     className="text-[13px] text-neutral-400 hover:text-red-500"
                   >
                     إزالة
@@ -87,11 +93,11 @@ export default function CartPage() {
           </div>
           <div className="mt-2 flex justify-between text-[14px] text-neutral-600 dark:text-neutral-300">
             <span>الشحن</span>
-            <span>{subtotal >= 500 ? "مجاني" : formatPrice(25)}</span>
+            <span>{shipping === 0 ? "مجاني" : formatPrice(shipping)}</span>
           </div>
           <div className="mt-4 flex justify-between border-t border-neutral-200 pt-4 text-[16px] font-bold dark:border-neutral-800">
             <span>الإجمالي</span>
-            <span>{formatPrice(subtotal >= 500 ? subtotal : subtotal + 25)}</span>
+            <span>{formatPrice(subtotal + shipping)}</span>
           </div>
           <ButtonLink href="/checkout" className="mt-6 w-full">
             المتابعة للدفع

@@ -14,17 +14,16 @@ export type CartItem = {
   slug: string;
   name: string;
   price: number;
-  color: string;
-  colorHex: string;
+  image: string;
   size: string;
   qty: number;
 };
 
 type CartContextValue = {
   items: CartItem[];
-  addItem: (product: Product, color: string, colorHex: string, size: string, qty: number) => void;
-  removeItem: (slug: string, color: string, size: string) => void;
-  updateQty: (slug: string, color: string, size: string, qty: number) => void;
+  addItem: (product: Product, size: string, qty: number) => void;
+  removeItem: (slug: string, size: string) => void;
+  updateQty: (slug: string, size: string, qty: number) => void;
   clear: () => void;
   count: number;
   subtotal: number;
@@ -36,8 +35,8 @@ const CartContext = createContext<CartContextValue | null>(null);
 
 const STORAGE_KEY = "abaya-store-cart";
 
-function sameLine(a: CartItem, slug: string, color: string, size: string) {
-  return a.slug === slug && a.color === color && a.size === size;
+function sameLine(a: CartItem, slug: string, size: string) {
+  return a.slug === slug && a.size === size;
 }
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
@@ -63,42 +62,36 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
   }, [items, hydrated]);
 
-  const addItem = useCallback(
-    (product: Product, color: string, colorHex: string, size: string, qty: number) => {
-      setItems((prev) => {
-        const existing = prev.find((i) => sameLine(i, product.slug, color, size));
-        if (existing) {
-          return prev.map((i) =>
-            sameLine(i, product.slug, color, size) ? { ...i, qty: i.qty + qty } : i
-          );
-        }
-        return [
-          ...prev,
-          {
-            slug: product.slug,
-            name: product.name,
-            price: product.price,
-            color,
-            colorHex,
-            size,
-            qty,
-          },
-        ];
-      });
-      setIsOpen(true);
-    },
-    []
-  );
-
-  const removeItem = useCallback((slug: string, color: string, size: string) => {
-    setItems((prev) => prev.filter((i) => !sameLine(i, slug, color, size)));
+  const addItem = useCallback((product: Product, size: string, qty: number) => {
+    setItems((prev) => {
+      const existing = prev.find((i) => sameLine(i, product.slug, size));
+      if (existing) {
+        return prev.map((i) =>
+          sameLine(i, product.slug, size) ? { ...i, qty: i.qty + qty } : i
+        );
+      }
+      return [
+        ...prev,
+        {
+          slug: product.slug,
+          name: product.name,
+          price: product.price,
+          image: product.image,
+          size,
+          qty,
+        },
+      ];
+    });
+    setIsOpen(true);
   }, []);
 
-  const updateQty = useCallback((slug: string, color: string, size: string, qty: number) => {
+  const removeItem = useCallback((slug: string, size: string) => {
+    setItems((prev) => prev.filter((i) => !sameLine(i, slug, size)));
+  }, []);
+
+  const updateQty = useCallback((slug: string, size: string, qty: number) => {
     setItems((prev) =>
-      prev.map((i) =>
-        sameLine(i, slug, color, size) ? { ...i, qty: Math.max(1, qty) } : i
-      )
+      prev.map((i) => (sameLine(i, slug, size) ? { ...i, qty: Math.max(1, qty) } : i))
     );
   }, []);
 

@@ -53,7 +53,7 @@ export function Footer() {
         <div className="mt-14 flex flex-col gap-4 border-t border-neutral-200 pt-6 text-[12px] text-neutral-400 sm:flex-row sm:items-center sm:justify-between dark:border-neutral-800">
           <p>© {new Date().getFullYear()} سِتر. جميع الحقوق محفوظة.</p>
           <div className="flex gap-6">
-            <span>الرياض، المملكة العربية السعودية</span>
+            <span>مسقط، سلطنة عُمان</span>
           </div>
         </div>
       </div>
