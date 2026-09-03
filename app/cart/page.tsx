@@ -98,6 +98,9 @@ export default function CartPage() {
             <span>الإجمالي</span>
             <span>{formatPrice(subtotal + shipping)}</span>
           </div>
+          <p className="mt-3 text-[12px] text-neutral-400">
+            * التوصيل اختياري — يمكنك اختيار الاستلام الذاتي مجانًا عند إتمام الطلب.
+          </p>
           <ButtonLink href="/checkout" className="mt-6 w-full">
             المتابعة للدفع
           </ButtonLink>

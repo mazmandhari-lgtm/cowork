@@ -11,8 +11,11 @@ import { formatPrice } from "@/lib/products";
 const SHIPPING_FEE = 2;
 const WHATSAPP_NUMBER = "96877989255";
 
+type DeliveryMethod = "delivery" | "pickup";
+
 function buildWhatsAppMessage(
   customer: { name: string; phone: string; city: string; neighborhood: string; address: string },
+  deliveryMethod: DeliveryMethod,
   items: CartItem[],
   subtotal: number,
   shipping: number
@@ -23,17 +26,26 @@ function buildWhatsAppMessage(
     "بيانات الزبونة:",
     `• الاسم الكامل: ${customer.name}`,
     `• رقم الجوال: ${customer.phone}`,
-    `• المدينة: ${customer.city} — ${customer.neighborhood}`,
-    `• العنوان التفصيلي: ${customer.address}`,
+  ];
+  if (deliveryMethod === "delivery") {
+    lines.push(
+      `• طريقة الاستلام: توصيل`,
+      `• المدينة: ${customer.city} — ${customer.neighborhood}`,
+      `• العنوان التفصيلي: ${customer.address}`
+    );
+  } else {
+    lines.push(`• طريقة الاستلام: استلام ذاتي من المتجر`);
+  }
+  lines.push(
     "",
     "تفاصيل الطلب:",
     ...items.map((item) => `• ${item.name} (${item.size}) × ${item.qty} — ${formatPrice(item.price * item.qty)}`),
     "",
-    `الشحن: ${formatPrice(shipping)}`,
+    `الشحن: ${shipping === 0 ? "لا يوجد (استلام ذاتي)" : formatPrice(shipping)}`,
     `الإجمالي: ${formatPrice(subtotal + shipping)}`,
     "",
-    "من فضلكم أرسلوا لي تفاصيل التحويل. بعد التحويل بأرسل لكم صورة الإيصال لتأكيد الطلب.",
-  ];
+    "من فضلكم أرسلوا لي تفاصيل التحويل. بعد التحويل بأرسل لكم صورة الإيصال لتأكيد الطلب."
+  );
   return lines.join("\n");
 }
 
@@ -42,8 +54,9 @@ export default function CheckoutPage() {
   const router = useRouter();
   const [placed, setPlaced] = useState(false);
   const [waLink, setWaLink] = useState("");
+  const [deliveryMethod, setDeliveryMethod] = useState<DeliveryMethod>("delivery");
 
-  const shipping = SHIPPING_FEE;
+  const shipping = deliveryMethod === "delivery" ? SHIPPING_FEE : 0;
   const total = subtotal + shipping;
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -56,7 +69,7 @@ export default function CheckoutPage() {
       neighborhood: String(data.get("neighborhood") ?? ""),
       address: String(data.get("address") ?? ""),
     };
-    const message = buildWhatsAppMessage(customer, items, subtotal, shipping);
+    const message = buildWhatsAppMessage(customer, deliveryMethod, items, subtotal, shipping);
     const link = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
     setWaLink(link);
     window.open(link, "_blank", "noopener");
@@ -106,13 +119,53 @@ export default function CheckoutPage() {
       <form onSubmit={handleSubmit} className="mt-10 grid grid-cols-1 gap-12 lg:grid-cols-3">
         <div className="flex flex-col gap-8 lg:col-span-2">
           <div>
-            <h2 className="text-[16px] font-semibold">معلومات التوصيل</h2>
+            <h2 className="text-[16px] font-semibold">طريقة الاستلام</h2>
+            <div className="mt-4 flex flex-col gap-3">
+              <label
+                className={`flex cursor-pointer items-center justify-between rounded-2xl border p-4 transition-colors ${
+                  deliveryMethod === "delivery" ? "border-neutral-950 dark:border-white" : "border-neutral-200 dark:border-neutral-800"
+                }`}
+              >
+                <span className="flex items-center gap-3">
+                  <input
+                    type="radio"
+                    name="deliveryMethod"
+                    checked={deliveryMethod === "delivery"}
+                    onChange={() => setDeliveryMethod("delivery")}
+                  />
+                  <span className="text-[14px] font-medium">توصيل ({formatPrice(SHIPPING_FEE)})</span>
+                </span>
+              </label>
+              <label
+                className={`flex cursor-pointer items-center justify-between rounded-2xl border p-4 transition-colors ${
+                  deliveryMethod === "pickup" ? "border-neutral-950 dark:border-white" : "border-neutral-200 dark:border-neutral-800"
+                }`}
+              >
+                <span className="flex items-center gap-3">
+                  <input
+                    type="radio"
+                    name="deliveryMethod"
+                    checked={deliveryMethod === "pickup"}
+                    onChange={() => setDeliveryMethod("pickup")}
+                  />
+                  <span className="text-[14px] font-medium">استلام ذاتي من المتجر (مجاني)</span>
+                </span>
+              </label>
+            </div>
+          </div>
+
+          <div>
+            <h2 className="text-[16px] font-semibold">بياناتك</h2>
             <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
               <input required name="name" placeholder="الاسم الكامل" className="input" />
               <input required name="phone" type="tel" placeholder="رقم الجوال" className="input" />
-              <input required name="city" placeholder="المدينة" className="input" />
-              <input required name="neighborhood" placeholder="الحي" className="input" />
-              <input required name="address" placeholder="العنوان التفصيلي" className="input sm:col-span-2" />
+              {deliveryMethod === "delivery" && (
+                <>
+                  <input required name="city" placeholder="المدينة" className="input" />
+                  <input required name="neighborhood" placeholder="الحي" className="input" />
+                  <input required name="address" placeholder="العنوان التفصيلي" className="input sm:col-span-2" />
+                </>
+              )}
             </div>
           </div>
 
@@ -155,7 +208,7 @@ export default function CheckoutPage() {
           </div>
           <div className="mt-2 flex justify-between text-[14px] text-neutral-600 dark:text-neutral-300">
             <span>الشحن</span>
-            <span>{formatPrice(shipping)}</span>
+            <span>{shipping === 0 ? "مجاني" : formatPrice(shipping)}</span>
           </div>
           <div className="mt-4 flex justify-between border-t border-neutral-200 pt-4 text-[16px] font-bold dark:border-neutral-800">
             <span>الإجمالي</span>
