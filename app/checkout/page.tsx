@@ -34,14 +34,14 @@ function buildWhatsAppMessage(
       `• العنوان التفصيلي: ${customer.address}`
     );
   } else {
-    lines.push(`• طريقة الاستلام: استلام ذاتي من المتجر`);
+    lines.push(`• طريقة الاستلام: استلام مباشر (بدون توصيل)`);
   }
   lines.push(
     "",
     "تفاصيل الطلب:",
     ...items.map((item) => `• ${item.name} (${item.size}) × ${item.qty} — ${formatPrice(item.price * item.qty)}`),
     "",
-    `الشحن: ${shipping === 0 ? "لا يوجد (استلام ذاتي)" : formatPrice(shipping)}`,
+    `الشحن: ${shipping === 0 ? "لا يوجد (استلام مباشر)" : formatPrice(shipping)}`,
     `الإجمالي: ${formatPrice(subtotal + shipping)}`,
     "",
     "من فضلكم أرسلوا لي تفاصيل التحويل. بعد التحويل بأرسل لكم صورة الإيصال لتأكيد الطلب."
@@ -148,7 +148,7 @@ export default function CheckoutPage() {
                     checked={deliveryMethod === "pickup"}
                     onChange={() => setDeliveryMethod("pickup")}
                   />
-                  <span className="text-[14px] font-medium">استلام ذاتي من المتجر (مجاني)</span>
+                  <span className="text-[14px] font-medium">استلام مباشر بدون توصيل (مجاني)</span>
                 </span>
               </label>
             </div>
