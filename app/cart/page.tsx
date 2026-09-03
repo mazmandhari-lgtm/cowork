@@ -7,7 +7,6 @@ import { ButtonLink } from "@/components/Button";
 import { useCart } from "@/lib/cart-context";
 import { formatPrice } from "@/lib/products";
 
-const FREE_SHIPPING_THRESHOLD = 40;
 const SHIPPING_FEE = 2;
 
 export default function CartPage() {
@@ -28,7 +27,7 @@ export default function CartPage() {
     );
   }
 
-  const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
+  const shipping = SHIPPING_FEE;
 
   return (
     <div className="mx-auto max-w-5xl px-5 py-16 sm:px-8">
@@ -93,7 +92,7 @@ export default function CartPage() {
           </div>
           <div className="mt-2 flex justify-between text-[14px] text-neutral-600 dark:text-neutral-300">
             <span>الشحن</span>
-            <span>{shipping === 0 ? "مجاني" : formatPrice(shipping)}</span>
+            <span>{formatPrice(shipping)}</span>
           </div>
           <div className="mt-4 flex justify-between border-t border-neutral-200 pt-4 text-[16px] font-bold dark:border-neutral-800">
             <span>الإجمالي</span>

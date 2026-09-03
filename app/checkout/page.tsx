@@ -8,7 +8,6 @@ import { Button, ButtonLink } from "@/components/Button";
 import { useCart, type CartItem } from "@/lib/cart-context";
 import { formatPrice } from "@/lib/products";
 
-const FREE_SHIPPING_THRESHOLD = 40;
 const SHIPPING_FEE = 2;
 const WHATSAPP_NUMBER = "96877989255";
 
@@ -30,7 +29,7 @@ function buildWhatsAppMessage(
     "تفاصيل الطلب:",
     ...items.map((item) => `• ${item.name} (${item.size}) × ${item.qty} — ${formatPrice(item.price * item.qty)}`),
     "",
-    `الشحن: ${shipping === 0 ? "مجاني" : formatPrice(shipping)}`,
+    `الشحن: ${formatPrice(shipping)}`,
     `الإجمالي: ${formatPrice(subtotal + shipping)}`,
     "",
     "من فضلكم أرسلوا لي تفاصيل التحويل. بعد التحويل بأرسل لكم صورة الإيصال لتأكيد الطلب.",
@@ -44,7 +43,7 @@ export default function CheckoutPage() {
   const [placed, setPlaced] = useState(false);
   const [waLink, setWaLink] = useState("");
 
-  const shipping = subtotal >= FREE_SHIPPING_THRESHOLD || subtotal === 0 ? 0 : SHIPPING_FEE;
+  const shipping = SHIPPING_FEE;
   const total = subtotal + shipping;
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -156,7 +155,7 @@ export default function CheckoutPage() {
           </div>
           <div className="mt-2 flex justify-between text-[14px] text-neutral-600 dark:text-neutral-300">
             <span>الشحن</span>
-            <span>{shipping === 0 ? "مجاني" : formatPrice(shipping)}</span>
+            <span>{formatPrice(shipping)}</span>
           </div>
           <div className="mt-4 flex justify-between border-t border-neutral-200 pt-4 text-[16px] font-bold dark:border-neutral-800">
             <span>الإجمالي</span>
