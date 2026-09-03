@@ -11,11 +11,9 @@ import { formatPrice } from "@/lib/products";
 const SHIPPING_FEE = 2;
 const WHATSAPP_NUMBER = "96877989255";
 
-type DeliveryMethod = "delivery" | "pickup";
-
 function buildWhatsAppMessage(
   customer: { name: string; phone: string; city: string; neighborhood: string; address: string },
-  deliveryMethod: DeliveryMethod,
+  delivery: boolean,
   items: CartItem[],
   subtotal: number,
   shipping: number
@@ -27,7 +25,7 @@ function buildWhatsAppMessage(
     `• الاسم الكامل: ${customer.name}`,
     `• رقم الجوال: ${customer.phone}`,
   ];
-  if (deliveryMethod === "delivery") {
+  if (delivery) {
     lines.push(
       `• طريقة الاستلام: توصيل`,
       `• المدينة: ${customer.city} — ${customer.neighborhood}`,
@@ -54,9 +52,9 @@ export default function CheckoutPage() {
   const router = useRouter();
   const [placed, setPlaced] = useState(false);
   const [waLink, setWaLink] = useState("");
-  const [deliveryMethod, setDeliveryMethod] = useState<DeliveryMethod>("delivery");
+  const [delivery, setDelivery] = useState(true);
 
-  const shipping = deliveryMethod === "delivery" ? SHIPPING_FEE : 0;
+  const shipping = delivery ? SHIPPING_FEE : 0;
   const total = subtotal + shipping;
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -69,7 +67,7 @@ export default function CheckoutPage() {
       neighborhood: String(data.get("neighborhood") ?? ""),
       address: String(data.get("address") ?? ""),
     };
-    const message = buildWhatsAppMessage(customer, deliveryMethod, items, subtotal, shipping);
+    const message = buildWhatsAppMessage(customer, delivery, items, subtotal, shipping);
     const link = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
     setWaLink(link);
     window.open(link, "_blank", "noopener");
@@ -119,54 +117,36 @@ export default function CheckoutPage() {
       <form onSubmit={handleSubmit} className="mt-10 grid grid-cols-1 gap-12 lg:grid-cols-3">
         <div className="flex flex-col gap-8 lg:col-span-2">
           <div>
-            <h2 className="text-[16px] font-semibold">طريقة الاستلام</h2>
-            <div className="mt-4 flex flex-col gap-3">
-              <label
-                className={`flex cursor-pointer items-center justify-between rounded-2xl border p-4 transition-colors ${
-                  deliveryMethod === "delivery" ? "border-neutral-950 dark:border-white" : "border-neutral-200 dark:border-neutral-800"
-                }`}
-              >
-                <span className="flex items-center gap-3">
-                  <input
-                    type="radio"
-                    name="deliveryMethod"
-                    checked={deliveryMethod === "delivery"}
-                    onChange={() => setDeliveryMethod("delivery")}
-                  />
-                  <span className="text-[14px] font-medium">توصيل ({formatPrice(SHIPPING_FEE)})</span>
-                </span>
-              </label>
-              <label
-                className={`flex cursor-pointer items-center justify-between rounded-2xl border p-4 transition-colors ${
-                  deliveryMethod === "pickup" ? "border-neutral-950 dark:border-white" : "border-neutral-200 dark:border-neutral-800"
-                }`}
-              >
-                <span className="flex items-center gap-3">
-                  <input
-                    type="radio"
-                    name="deliveryMethod"
-                    checked={deliveryMethod === "pickup"}
-                    onChange={() => setDeliveryMethod("pickup")}
-                  />
-                  <span className="text-[14px] font-medium">استلام مباشر بدون توصيل (مجاني)</span>
-                </span>
-              </label>
-            </div>
-          </div>
-
-          <div>
             <h2 className="text-[16px] font-semibold">بياناتك</h2>
             <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
               <input required name="name" placeholder="الاسم الكامل" className="input" />
               <input required name="phone" type="tel" placeholder="رقم الجوال" className="input" />
-              {deliveryMethod === "delivery" && (
-                <>
-                  <input required name="city" placeholder="المدينة" className="input" />
-                  <input required name="neighborhood" placeholder="الحي" className="input" />
-                  <input required name="address" placeholder="العنوان التفصيلي" className="input sm:col-span-2" />
-                </>
-              )}
             </div>
+
+            <label
+              className={`mt-4 flex cursor-pointer items-center justify-between rounded-2xl border p-4 transition-colors ${
+                delivery ? "border-neutral-950 dark:border-white" : "border-neutral-200 dark:border-neutral-800"
+              }`}
+            >
+              <span className="flex items-center gap-3">
+                <input
+                  type="checkbox"
+                  checked={delivery}
+                  onChange={(e) => setDelivery(e.target.checked)}
+                />
+                <span className="text-[14px] font-medium">
+                  توصيل (+{formatPrice(SHIPPING_FEE)}) — إن لم تُفعّليه، فلا رسوم توصيل
+                </span>
+              </span>
+            </label>
+
+            {delivery && (
+              <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <input required name="city" placeholder="المدينة" className="input" />
+                <input required name="neighborhood" placeholder="الحي" className="input" />
+                <input required name="address" placeholder="العنوان التفصيلي" className="input sm:col-span-2" />
+              </div>
+            )}
           </div>
 
           <div>
