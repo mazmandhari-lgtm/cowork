@@ -1,3 +1,8 @@
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+function productImage(filename: string) {
+  return `${BASE_PATH}/products/${filename}`;
+}
+
 export type Product = {
   slug: string;
   name: string;
@@ -20,7 +25,7 @@ export const products: Product[] = [
     name: "Blush Palm",
     category: "مناسبات",
     price: 41.5,
-    image: "/products/blush-palm.jpg",
+    image: productImage("blush-palm.jpg"),
     color: "#efe9df",
     tagline: "نخيل مطرّز بخيوط وردية على قماش عاجي ناعم.",
     description:
@@ -40,7 +45,7 @@ export const products: Product[] = [
     name: "Sky Rain",
     category: "يومية",
     price: 31,
-    image: "/products/sky-rain.jpg",
+    image: productImage("sky-rain.jpg"),
     color: "#a7bdd1",
     tagline: "طبقة خفيفة بنقشة هندسية زرقاء، تُرتدى فوق أي إطلالة.",
     description:
@@ -59,7 +64,7 @@ export const products: Product[] = [
     name: "Navy Lily",
     category: "مناسبات",
     price: 33,
-    image: "/products/navy-lily.jpg",
+    image: productImage("navy-lily.jpg"),
     color: "#1f2a3d",
     tagline: "معطف كحلي بطبعة زنبق أبيض تمتد على كامل الذيل.",
     description:
@@ -79,7 +84,7 @@ export const products: Product[] = [
     name: "Emerald & Ruby",
     category: "مناسبات",
     price: 33,
-    image: "/products/emerald-ruby.jpg",
+    image: productImage("emerald-ruby.jpg"),
     color: "#2f4a3e",
     tagline: "قطعة بلونين متباينين، سويدي فاخر بغرزة يدوية بارزة.",
     description:
@@ -98,7 +103,7 @@ export const products: Product[] = [
     name: "Red Hibiscus",
     category: "مناسبات",
     price: 37,
-    image: "/products/red-hibiscus.jpg",
+    image: productImage("red-hibiscus.jpg"),
     color: "#5c1620",
     tagline: "زهرة الكركديه على حرير أسود، بأكمام عنابية وشراشيب.",
     description:
