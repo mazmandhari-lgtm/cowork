@@ -5,23 +5,62 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { AbayaArt } from "@/components/AbayaArt";
 import { Button, ButtonLink } from "@/components/Button";
-import { useCart } from "@/lib/cart-context";
+import { useCart, type CartItem } from "@/lib/cart-context";
 import { formatPrice } from "@/lib/products";
 
 const FREE_SHIPPING_THRESHOLD = 40;
 const SHIPPING_FEE = 2;
+const WHATSAPP_NUMBER = "96877989255";
+
+function buildWhatsAppMessage(
+  customer: { name: string; phone: string; city: string; neighborhood: string; address: string },
+  items: CartItem[],
+  subtotal: number,
+  shipping: number
+) {
+  const lines = [
+    "مرحبًا Uniflora Closet 👋 أرغب بطلب:",
+    "",
+    "بيانات الزبونة:",
+    `• الاسم الكامل: ${customer.name}`,
+    `• رقم الجوال: ${customer.phone}`,
+    `• المدينة: ${customer.city} — ${customer.neighborhood}`,
+    `• العنوان التفصيلي: ${customer.address}`,
+    "",
+    "تفاصيل الطلب:",
+    ...items.map((item) => `• ${item.name} (${item.size}) × ${item.qty} — ${formatPrice(item.price * item.qty)}`),
+    "",
+    `الشحن: ${shipping === 0 ? "مجاني" : formatPrice(shipping)}`,
+    `الإجمالي: ${formatPrice(subtotal + shipping)}`,
+    "",
+    "من فضلكم أرسلوا لي تفاصيل التحويل. بعد التحويل بأرسل لكم صورة الإيصال لتأكيد الطلب.",
+  ];
+  return lines.join("\n");
+}
 
 export default function CheckoutPage() {
   const { items, subtotal, clear } = useCart();
   const router = useRouter();
   const [placed, setPlaced] = useState(false);
-  const [payment, setPayment] = useState<"card" | "cod">("card");
+  const [waLink, setWaLink] = useState("");
 
   const shipping = subtotal >= FREE_SHIPPING_THRESHOLD || subtotal === 0 ? 0 : SHIPPING_FEE;
   const total = subtotal + shipping;
 
-  function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    const data = new FormData(e.currentTarget);
+    const customer = {
+      name: String(data.get("name") ?? ""),
+      phone: String(data.get("phone") ?? ""),
+      city: String(data.get("city") ?? ""),
+      neighborhood: String(data.get("neighborhood") ?? ""),
+      address: String(data.get("address") ?? ""),
+    };
+    const message = buildWhatsAppMessage(customer, items, subtotal, shipping);
+    const link = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+    setWaLink(link);
+    window.open(link, "_blank", "noopener");
     setPlaced(true);
     clear();
   }
@@ -34,12 +73,15 @@ export default function CheckoutPage() {
             <path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </div>
-        <h1 className="mt-8 text-[26px] font-bold">تم استلام طلبك بنجاح</h1>
+        <h1 className="mt-8 text-[26px] font-bold">تم إرسال طلبك عبر واتساب</h1>
         <p className="mt-2 text-[15px] text-neutral-500 dark:text-neutral-400">
-          شكرًا لثقتك بنا. سنرسل لك تأكيدًا وتفاصيل الشحن قريبًا.
+          أكملي المحادثة معنا على واتساب لإرسال إيصال التحويل وتأكيد طلبك نهائيًا.
         </p>
-        <div className="mt-8">
-          <ButtonLink href="/shop">متابعة التسوق</ButtonLink>
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+          <ButtonLink href={waLink}>فتح واتساب مرة أخرى</ButtonLink>
+          <ButtonLink href="/shop" variant="ghost">
+            متابعة التسوق
+          </ButtonLink>
         </div>
       </div>
     );
@@ -67,56 +109,25 @@ export default function CheckoutPage() {
           <div>
             <h2 className="text-[16px] font-semibold">معلومات التوصيل</h2>
             <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <input required placeholder="الاسم الكامل" className="input" />
-              <input required type="tel" placeholder="رقم الجوال" className="input" />
-              <input required type="email" placeholder="البريد الإلكتروني" className="input sm:col-span-2" />
-              <input required placeholder="المدينة" className="input" />
-              <input required placeholder="الحي" className="input" />
-              <input required placeholder="العنوان التفصيلي" className="input sm:col-span-2" />
+              <input required name="name" placeholder="الاسم الكامل" className="input" />
+              <input required name="phone" type="tel" placeholder="رقم الجوال" className="input" />
+              <input required name="city" placeholder="المدينة" className="input" />
+              <input required name="neighborhood" placeholder="الحي" className="input" />
+              <input required name="address" placeholder="العنوان التفصيلي" className="input sm:col-span-2" />
             </div>
           </div>
 
           <div>
-            <h2 className="text-[16px] font-semibold">طريقة الدفع</h2>
-            <div className="mt-4 flex flex-col gap-3">
-              <label
-                className={`flex cursor-pointer items-center justify-between rounded-2xl border p-4 transition-colors ${
-                  payment === "card" ? "border-neutral-950 dark:border-white" : "border-neutral-200 dark:border-neutral-800"
-                }`}
-              >
-                <span className="flex items-center gap-3">
-                  <input
-                    type="radio"
-                    name="payment"
-                    checked={payment === "card"}
-                    onChange={() => setPayment("card")}
-                  />
-                  <span className="text-[14px] font-medium">بطاقة ائتمان / مدى</span>
-                </span>
-              </label>
-              <label
-                className={`flex cursor-pointer items-center justify-between rounded-2xl border p-4 transition-colors ${
-                  payment === "cod" ? "border-neutral-950 dark:border-white" : "border-neutral-200 dark:border-neutral-800"
-                }`}
-              >
-                <span className="flex items-center gap-3">
-                  <input
-                    type="radio"
-                    name="payment"
-                    checked={payment === "cod"}
-                    onChange={() => setPayment("cod")}
-                  />
-                  <span className="text-[14px] font-medium">الدفع عند الاستلام</span>
-                </span>
-              </label>
-
-              {payment === "card" && (
-                <div className="grid grid-cols-1 gap-4 rounded-2xl bg-neutral-50 p-4 sm:grid-cols-2 dark:bg-neutral-950">
-                  <input required placeholder="رقم البطاقة" className="input sm:col-span-2" />
-                  <input required placeholder="تاريخ الانتهاء (MM/YY)" className="input" />
-                  <input required placeholder="CVC" className="input" />
-                </div>
-              )}
+            <h2 className="text-[16px] font-semibold">إتمام الطلب والدفع</h2>
+            <div className="mt-4 flex items-start gap-3 rounded-2xl border border-neutral-950 p-4 dark:border-white">
+              <span className="text-[20px] leading-none">🟢</span>
+              <div>
+                <p className="text-[14px] font-semibold">الطلب والدفع عبر واتساب</p>
+                <p className="mt-1 text-[13px] leading-6 text-neutral-500 dark:text-neutral-400">
+                  عند الضغط على الزر، بيفتح واتساب برسالة جاهزة فيها تفاصيل طلبك كاملة. بعد التواصل
+                  معنا وتحويل المبلغ، أرسلي لنا صورة إيصال التحويل بنفس المحادثة لتأكيد طلبك.
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -152,7 +163,7 @@ export default function CheckoutPage() {
             <span>{formatPrice(total)}</span>
           </div>
           <Button type="submit" className="mt-6 w-full">
-            تأكيد الطلب
+            إرسال الطلب عبر واتساب
           </Button>
           <button
             type="button"
