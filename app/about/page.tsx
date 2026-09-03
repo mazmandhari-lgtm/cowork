@@ -106,7 +106,7 @@ export default function AboutPage() {
           <Reveal>
             <h2 className="text-[26px] font-bold tracking-tight">التوصيل والإرجاع</h2>
             <ul className="mt-6 flex flex-col gap-4 text-[14px] leading-7 text-neutral-600 dark:text-neutral-300">
-              <li>• رسوم توصيل ثابتة 2 ر.ع. لجميع الطلبات داخل السلطنة.</li>
+              <li>• التوصيل اختياري برسوم ثابتة 2 ر.ع.، أو الاستلام الذاتي من المتجر مجانًا.</li>
               <li>• مدة التوصيل من 2 إلى 5 أيام عمل حسب المدينة.</li>
               <li>• إمكانية الإرجاع أو الاستبدال خلال 14 يومًا من الاستلام.</li>
               <li>• القطعة يجب أن تكون بحالتها الأصلية مع البطاقة والتغليف.</li>
