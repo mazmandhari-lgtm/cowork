@@ -5,6 +5,11 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { CartProvider } from "@/lib/cart-context";
 
+// The footer fetches products from Supabase on every route, so the whole
+// app renders per-request rather than being statically generated at build
+// time — that's what lets product edits in Supabase show up immediately.
+export const dynamic = "force-dynamic";
+
 const tajawal = Tajawal({
   variable: "--font-tajawal",
   subsets: ["arabic", "latin"],

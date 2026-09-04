@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Button, ButtonLink } from "@/components/Button";
 import { useCart, type CartItem } from "@/lib/cart-context";
 import { formatPrice } from "@/lib/products";
+import { getSupabaseClient } from "@/lib/supabase";
 
 const SHIPPING_FEE = 2;
 const WHATSAPP_NUMBER = "96877989255";
@@ -56,7 +57,7 @@ export default function CheckoutPage() {
   const shipping = delivery ? SHIPPING_FEE : 0;
   const total = subtotal + shipping;
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const data = new FormData(e.currentTarget);
     const customer = {
@@ -72,6 +73,32 @@ export default function CheckoutPage() {
     window.open(link, "_blank", "noopener");
     setPlaced(true);
     clear();
+
+    try {
+      const supabase = getSupabaseClient();
+      await supabase.from("orders").insert({
+        customer_name: customer.name,
+        customer_phone: customer.phone,
+        delivery,
+        city: delivery ? customer.city : null,
+        neighborhood: delivery ? customer.neighborhood : null,
+        address: delivery ? customer.address : null,
+        items: items.map((item) => ({
+          slug: item.slug,
+          name: item.name,
+          size: item.size,
+          qty: item.qty,
+          price: item.price,
+        })),
+        subtotal,
+        shipping,
+        total: subtotal + shipping,
+      });
+    } catch (err) {
+      // The WhatsApp message already carries the full order — a DB hiccup
+      // here must never block the customer from completing checkout.
+      console.error("Failed to save order to Supabase", err);
+    }
   }
 
   if (placed) {
