@@ -4,11 +4,11 @@ import { ButtonLink } from "@/components/Button";
 import { NewsletterForm } from "@/components/NewsletterForm";
 import { ProductCard } from "@/components/ProductCard";
 import { Reveal } from "@/components/Reveal";
-import { products } from "@/lib/products";
+import { getProducts } from "@/lib/products";
 
-const categories = Array.from(new Set(products.map((p) => p.category)));
-
-export default function Home() {
+export default async function Home() {
+  const products = await getProducts();
+  const categories = Array.from(new Set(products.map((p) => p.category)));
   const bestsellers = products.filter((p) => p.isBestseller);
   const picks = bestsellers.length > 0 ? bestsellers : products.slice(0, 3);
   const featured = products.find((p) => p.slug === "navy-lily") ?? products[0];

@@ -1,9 +1,10 @@
 import Link from "next/link";
-import { products } from "@/lib/products";
+import { getProducts } from "@/lib/products";
 
-const categories = Array.from(new Set(products.map((p) => p.category)));
+export async function Footer() {
+  const products = await getProducts();
+  const categories = Array.from(new Set(products.map((p) => p.category)));
 
-export function Footer() {
   return (
     <footer className="sitefoot mt-10">
       <div className="mx-auto max-w-6xl px-5 py-14 sm:px-8">

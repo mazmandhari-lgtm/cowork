@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { Reveal } from "@/components/Reveal";
-import { products } from "@/lib/products";
+import { getProducts } from "@/lib/products";
 
 const values = [
   {
@@ -26,7 +26,8 @@ const sizeRows = [
   ["60", "160", "175+ سم"],
 ];
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const products = await getProducts();
   const strip = [
     products.find((p) => p.slug === "red-hibiscus")!,
     products.find((p) => p.slug === "blush-palm")!,
