@@ -20,36 +20,30 @@ function ShopContent() {
   const [sort, setSort] = useState<"featured" | "price-asc" | "price-desc">("featured");
 
   const filtered = useMemo(() => {
-    let list = products.filter(
-      (p) => activeCategory === "الكل" || p.category === activeCategory
-    );
+    let list = products.filter((p) => activeCategory === "الكل" || p.category === activeCategory);
     if (sort === "price-asc") list = [...list].sort((a, b) => a.price - b.price);
     if (sort === "price-desc") list = [...list].sort((a, b) => b.price - a.price);
     return list;
   }, [activeCategory, sort]);
 
   return (
-    <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8">
+    <div className="mx-auto max-w-6xl px-5 py-14 sm:px-8">
       <Reveal>
         <div className="text-center">
-          <h1 className="text-[36px] font-bold tracking-tight sm:text-[44px]">المتجر</h1>
-          <p className="mx-auto mt-3 max-w-md text-[15px] text-neutral-500 dark:text-neutral-400">
+          <h1 className="text-[38px] font-bold">المتجر</h1>
+          <p className="t-soft mt-2 text-[14.5px]">
             كل تصاميمنا بمكان واحد، اختاري ما يناسب مناسبتك ويومك.
           </p>
         </div>
       </Reveal>
 
-      <div className="mt-10 flex flex-col items-center justify-between gap-5 border-b border-neutral-200 pb-6 sm:flex-row dark:border-neutral-800">
+      <div className="mt-8 flex flex-col items-center justify-between gap-4 border-b hairline pb-6 sm:flex-row">
         <div className="flex flex-wrap justify-center gap-2">
           {categories.map((cat) => (
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}
-              className={`rounded-full px-4 py-2 text-[13px] font-medium transition-colors ${
-                activeCategory === cat
-                  ? "bg-neutral-950 text-white dark:bg-white dark:text-black"
-                  : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800"
-              }`}
+              className={`chip ${activeCategory === cat ? "active" : ""}`}
             >
               {cat}
             </button>
@@ -58,7 +52,7 @@ function ShopContent() {
         <select
           value={sort}
           onChange={(e) => setSort(e.target.value as typeof sort)}
-          className="rounded-full border border-neutral-300 bg-white px-4 py-2 text-[13px] outline-none dark:border-neutral-700 dark:bg-neutral-900"
+          className="sortsel"
         >
           <option value="featured">الأحدث</option>
           <option value="price-asc">السعر: من الأقل للأعلى</option>
@@ -67,9 +61,9 @@ function ShopContent() {
       </div>
 
       {filtered.length === 0 ? (
-        <p className="py-24 text-center text-neutral-400">لا توجد منتجات في هذا التصنيف حاليًا.</p>
+        <p className="t-faint py-20 text-center">لا توجد منتجات في هذا التصنيف حاليًا.</p>
       ) : (
-        <div className="mt-10 grid grid-cols-2 gap-5 sm:grid-cols-3">
+        <div className="mt-8 grid grid-cols-2 gap-5 pb-10 sm:grid-cols-3">
           {filtered.map((p, i) => (
             <Reveal key={p.slug} delay={(i % 6) * 70}>
               <ProductCard product={p} />

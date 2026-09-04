@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Tajawal } from "next/font/google";
+import { Tajawal, Amiri, Cormorant_Garamond } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
@@ -8,19 +8,36 @@ import { CartProvider } from "@/lib/cart-context";
 const tajawal = Tajawal({
   variable: "--font-tajawal",
   subsets: ["arabic", "latin"],
-  weight: ["300", "400", "500", "700", "800", "900"],
+  weight: ["300", "400", "500", "700", "900"],
+});
+
+const amiri = Amiri({
+  variable: "--font-amiri",
+  subsets: ["arabic", "latin"],
+  weight: ["400", "700"],
+});
+
+const cormorant = Cormorant_Garamond({
+  variable: "--font-cormorant",
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
 });
 
 export const metadata: Metadata = {
-  title: "سِتر | عبايات فاخرة بلمسة عصرية",
+  title: "Uniflora Closet | عبايات فاخرة بلمسة عصرية",
   description:
-    "متجر سِتر لبيع العبايات الفاخرة — تصاميم أنيقة بجودة استثنائية، للحياة اليومية والمناسبات والسفر.",
+    "Uniflora Closet — عبايات فاخرة مصمَّمة بعناية، للحياة اليومية والمناسبات. الطلب والدفع عبر واتساب.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="ar" dir="rtl" className={`${tajawal.variable} antialiased`}>
-      <body className="flex min-h-screen flex-col bg-white text-neutral-900 dark:bg-black dark:text-white">
+    <html
+      lang="ar"
+      dir="rtl"
+      className={`${tajawal.variable} ${amiri.variable} ${cormorant.variable} antialiased`}
+    >
+      <body className="flex min-h-screen flex-col">
+        <div className="ambient" aria-hidden="true" />
         <CartProvider>
           <Navbar />
           <main className="flex-1">{children}</main>
