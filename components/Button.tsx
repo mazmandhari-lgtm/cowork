@@ -1,22 +1,18 @@
 import Link from "next/link";
 
+type Variant = "primary" | "ghost" | "gold";
+
 type BaseProps = {
   children: React.ReactNode;
-  variant?: "primary" | "secondary" | "ghost";
+  variant?: Variant;
   className?: string;
 };
 
-const variants = {
-  primary:
-    "bg-neutral-950 text-white hover:bg-neutral-800 dark:bg-white dark:text-neutral-950 dark:hover:bg-neutral-200",
-  secondary:
-    "bg-neutral-100 text-neutral-950 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-white dark:hover:bg-neutral-700",
-  ghost:
-    "border border-neutral-300 text-neutral-950 hover:border-neutral-950 dark:border-neutral-700 dark:text-white dark:hover:border-white",
+const variants: Record<Variant, string> = {
+  primary: "btn-primary",
+  ghost: "btn-ghost",
+  gold: "btn-gold",
 };
-
-const base =
-  "inline-flex items-center justify-center rounded-full px-6 py-3 text-[15px] font-medium transition-all duration-300 active:scale-[0.97]";
 
 export function ButtonLink({
   href,
@@ -25,7 +21,7 @@ export function ButtonLink({
   className,
 }: BaseProps & { href: string }) {
   return (
-    <Link href={href} className={`${base} ${variants[variant]} ${className ?? ""}`}>
+    <Link href={href} className={`btn ${variants[variant]} ${className ?? ""}`}>
       {children}
     </Link>
   );
@@ -38,7 +34,7 @@ export function Button({
   ...rest
 }: BaseProps & React.ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
-    <button className={`${base} ${variants[variant]} ${className ?? ""}`} {...rest}>
+    <button className={`btn ${variants[variant]} ${className ?? ""}`} {...rest}>
       {children}
     </button>
   );
