@@ -11,9 +11,20 @@ import { getSupabaseClient } from "@/lib/supabase";
 const SHIPPING_FEE = 2;
 const WHATSAPP_NUMBER = "96877989255";
 
+type Measurements = {
+  length: string;
+  shoulder: string;
+  chest: string;
+  waist: string;
+  sleeve: string;
+  notes: string;
+};
+
 function buildWhatsAppMessage(
   customer: { name: string; phone: string; city: string; neighborhood: string; address: string },
   delivery: boolean,
+  needsMeasurements: boolean,
+  measurements: Measurements,
   items: CartItem[],
   subtotal: number,
   shipping: number
@@ -34,6 +45,20 @@ function buildWhatsAppMessage(
   } else {
     lines.push(`• طريقة الاستلام: استلام مباشر (بدون توصيل)`);
   }
+
+  if (needsMeasurements) {
+    lines.push(
+      "",
+      "⚠️ العباية غير جاهزة للتسليم الفوري — تحتاج تفصيل حسب القياسات:",
+      `• الطول: ${measurements.length || "—"} سم`,
+      `• الكتف: ${measurements.shoulder || "—"} سم`,
+      `• الصدر: ${measurements.chest || "—"} سم`,
+      `• الخصر: ${measurements.waist || "—"} سم`,
+      `• طول الكم: ${measurements.sleeve || "—"} سم`
+    );
+    if (measurements.notes) lines.push(`• ملاحظات: ${measurements.notes}`);
+  }
+
   lines.push(
     "",
     "تفاصيل الطلب:",
@@ -53,6 +78,7 @@ export default function CheckoutPage() {
   const [placed, setPlaced] = useState(false);
   const [waLink, setWaLink] = useState("");
   const [delivery, setDelivery] = useState(true);
+  const [needsMeasurements, setNeedsMeasurements] = useState(false);
 
   const shipping = delivery ? SHIPPING_FEE : 0;
   const total = subtotal + shipping;
@@ -67,7 +93,23 @@ export default function CheckoutPage() {
       neighborhood: String(data.get("neighborhood") ?? ""),
       address: String(data.get("address") ?? ""),
     };
-    const message = buildWhatsAppMessage(customer, delivery, items, subtotal, shipping);
+    const measurements: Measurements = {
+      length: String(data.get("m_length") ?? ""),
+      shoulder: String(data.get("m_shoulder") ?? ""),
+      chest: String(data.get("m_chest") ?? ""),
+      waist: String(data.get("m_waist") ?? ""),
+      sleeve: String(data.get("m_sleeve") ?? ""),
+      notes: String(data.get("m_notes") ?? ""),
+    };
+    const message = buildWhatsAppMessage(
+      customer,
+      delivery,
+      needsMeasurements,
+      measurements,
+      items,
+      subtotal,
+      shipping
+    );
     const link = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
     setWaLink(link);
     window.open(link, "_blank", "noopener");
@@ -83,6 +125,7 @@ export default function CheckoutPage() {
         city: delivery ? customer.city : null,
         neighborhood: delivery ? customer.neighborhood : null,
         address: delivery ? customer.address : null,
+        custom_measurements: needsMeasurements ? measurements : null,
         items: items.map((item) => ({
           slug: item.slug,
           name: item.name,
@@ -157,6 +200,31 @@ export default function CheckoutPage() {
                 <input required name="city" placeholder="المدينة" className="input" />
                 <input required name="neighborhood" placeholder="الحي" className="input" />
                 <input required name="address" placeholder="العنوان التفصيلي" className="input sm:col-span-2" />
+              </div>
+            )}
+          </div>
+
+          <div>
+            <h2 className="text-[16px] font-bold">القياسات</h2>
+            <label className={`option-card mt-4 ${needsMeasurements ? "active" : ""}`}>
+              <input
+                type="checkbox"
+                checked={needsMeasurements}
+                onChange={(e) => setNeedsMeasurements(e.target.checked)}
+              />
+              <span className="text-[14px] font-medium">
+                العباية غير جاهزة للتسليم الفوري — أحتاج تفصيل حسب قياساتي
+              </span>
+            </label>
+
+            {needsMeasurements && (
+              <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3">
+                <input name="m_length" placeholder="الطول (سم)" className="input" />
+                <input name="m_shoulder" placeholder="الكتف (سم)" className="input" />
+                <input name="m_chest" placeholder="الصدر (سم)" className="input" />
+                <input name="m_waist" placeholder="الخصر (سم)" className="input" />
+                <input name="m_sleeve" placeholder="طول الكم (سم)" className="input" />
+                <input name="m_notes" placeholder="ملاحظات إضافية" className="input sm:col-span-3" />
               </div>
             )}
           </div>

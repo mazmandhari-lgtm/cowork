@@ -24,6 +24,14 @@ type OrderRow = {
   city: string | null;
   neighborhood: string | null;
   address: string | null;
+  custom_measurements: {
+    length: string;
+    shoulder: string;
+    chest: string;
+    waist: string;
+    sleeve: string;
+    notes: string;
+  } | null;
   items: { slug: string; name: string; size: string; qty: number; price: number }[];
   subtotal: number;
   shipping: number;
