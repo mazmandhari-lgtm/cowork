@@ -20,13 +20,13 @@ export default function TermsPage() {
               fraud or restrictions on shipping and availability of the inventory.
             </p>
             <p>
-              When you complete your process of purchase and choose to pay on delivery, we shall
-              send you a text message or call to confirm your order and the order details and the
-              Deposit payment before accept it.
+              When you complete your process of purchase, we shall send you a text message or call
+              to confirm your order and the order details and the full payment amount before we
+              accept it.
             </p>
             <p>
-              If the order is not confirmed or the deposit not paid within (3) days of receiving
-              the message or the phone call, the order shall be cancelled.
+              If the order is not confirmed or the full payment is not made within (3) days of
+              receiving the message or the phone call, the order shall be cancelled.
             </p>
           </div>
         </section>
@@ -36,10 +36,9 @@ export default function TermsPage() {
         <section className="mt-12">
           <h2 className="text-[22px] font-bold">The Payment</h2>
           <div className="t-soft mt-4 flex flex-col gap-3 text-[14.5px] leading-8 text-left">
-            <p>We currently accept the following payment modes upon registering purchase orders on our website:</p>
+            <p>We currently accept the following payment mode upon registering purchase orders on our website:</p>
             <ul className="flex flex-col gap-2">
-              <li>- Cash on Delivery (only inside Qatar orders)</li>
-              <li>- Bank Transfer</li>
+              <li>- Bank Transfer only, full amount (no cash and no partial deposit accepted).</li>
             </ul>
           </div>
         </section>
