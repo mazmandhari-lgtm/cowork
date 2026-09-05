@@ -55,6 +55,11 @@ export async function Footer() {
                   تواصلي معنا
                 </Link>
               </li>
+              <li>
+                <Link href="/terms" className="navlink">
+                  الشروط والأحكام
+                </Link>
+              </li>
             </ul>
           </div>
         </div>
