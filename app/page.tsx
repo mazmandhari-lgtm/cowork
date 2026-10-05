@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ButtonLink } from "@/components/Button";
+import { HeroSlider } from "@/components/HeroSlider";
 import { NewsletterForm } from "@/components/NewsletterForm";
 import { ProductCard } from "@/components/ProductCard";
 import { Reveal } from "@/components/Reveal";
@@ -13,7 +14,6 @@ export default async function Home() {
   const picks = bestsellers.length > 0 ? bestsellers : products.slice(0, 3);
   const featured = products.find((p) => p.slug === "navy-lily") ?? products[0];
   const second = products.find((p) => p.slug === "red-hibiscus") ?? products[1];
-  const heroProduct = products.find((p) => p.slug === "emerald-ruby") ?? products[0];
 
   return (
     <div className="flex flex-col">
@@ -39,19 +39,7 @@ export default async function Home() {
         </Reveal>
 
         <Reveal delay={120}>
-          <div className="art-frame relative aspect-[4/5]">
-            <Image
-              src={heroProduct.image}
-              alt={heroProduct.name}
-              fill
-              sizes="(max-width: 1024px) 100vw, 480px"
-              className="object-cover object-[78%_20%]"
-              priority
-            />
-            <span className="panel-glass brand-en absolute bottom-5 end-5 rounded-full px-4 py-2 text-[12px] font-semibold">
-              {heroProduct.name}
-            </span>
-          </div>
+          <HeroSlider products={products} />
         </Reveal>
       </section>
 
