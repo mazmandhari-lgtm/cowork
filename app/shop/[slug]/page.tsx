@@ -24,7 +24,7 @@ export default async function ProductPage({
           <Reveal>
             <h2 className="text-[22px] font-bold">قد يعجبك أيضًا</h2>
           </Reveal>
-          <div className="mt-6 grid grid-cols-2 gap-6 sm:grid-cols-3">
+          <div className="mt-6 grid grid-cols-2 gap-5 sm:grid-cols-3">
             {related.map((p, i) => (
               <Reveal key={p.slug} delay={i * 80}>
                 <ProductCard product={p} />

@@ -39,7 +39,7 @@ export function HeroSlider({ products }: { products: Product[] }) {
         ))}
       </div>
 
-      <span className="glass-tag brand-en absolute bottom-5 end-5 rounded-full px-4 py-2 text-[12px] font-semibold">
+      <span className="panel-glass brand-en absolute bottom-5 end-5 rounded-full px-4 py-2 text-[12px] font-semibold">
         {current.name}
       </span>
     </div>
