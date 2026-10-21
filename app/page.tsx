@@ -139,7 +139,7 @@ export default async function Home() {
         <Reveal>
           <h2 className="text-[28px] font-bold">مختاراتنا</h2>
         </Reveal>
-        <div className="mt-6 grid grid-cols-2 gap-5 sm:grid-cols-3">
+        <div className="mt-6 grid grid-cols-2 gap-6 sm:grid-cols-3">
           {picks.map((p, i) => (
             <Reveal key={p.slug} delay={i * 90}>
               <ProductCard product={p} />

@@ -59,7 +59,7 @@ function ShopContent({ products }: { products: Product[] }) {
       {filtered.length === 0 ? (
         <p className="t-faint py-20 text-center">لا توجد منتجات في هذا التصنيف حاليًا.</p>
       ) : (
-        <div className="mt-8 grid grid-cols-2 gap-5 pb-10 sm:grid-cols-3">
+        <div className="mt-8 grid grid-cols-2 gap-6 pb-10 sm:grid-cols-3">
           {filtered.map((p, i) => (
             <Reveal key={p.slug} delay={(i % 6) * 70}>
               <ProductCard product={p} />
