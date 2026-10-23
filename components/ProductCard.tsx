@@ -5,11 +5,13 @@ import Link from "next/link";
 import { useState } from "react";
 import { useCart } from "@/lib/cart-context";
 import { formatPrice, type Product } from "@/lib/products";
+import { useTiltCard } from "@/lib/useTiltCard";
 
 export function ProductCard({ product }: { product: Product }) {
   const badge = product.isNew ? "جديد" : product.isBestseller ? "الأكثر طلبًا" : null;
   const { addItem } = useCart();
   const [added, setAdded] = useState(false);
+  const { ref, handlePointerMove, handlePointerLeave } = useTiltCard<HTMLDivElement>();
 
   function handleQuickAdd(e: React.MouseEvent) {
     e.preventDefault();
@@ -20,7 +22,12 @@ export function ProductCard({ product }: { product: Product }) {
   }
 
   return (
-    <div className="pcard group relative">
+    <div
+      ref={ref}
+      className="pcard group relative"
+      onPointerMove={handlePointerMove}
+      onPointerLeave={handlePointerLeave}
+    >
       <Link href={`/shop/${product.slug}`} className="absolute inset-0 z-10" aria-label={product.name} />
       <div className="relative aspect-[4/5] overflow-hidden">
         {badge && <span className="pcard-badge">{badge}</span>}
@@ -29,7 +36,7 @@ export function ProductCard({ product }: { product: Product }) {
           alt={product.name}
           fill
           sizes="(max-width: 640px) 50vw, 33vw"
-          className="object-cover object-[72%_18%] transition-transform duration-500 group-hover:scale-105"
+          className="pcard-img object-cover object-[72%_18%]"
         />
         <button
           type="button"
