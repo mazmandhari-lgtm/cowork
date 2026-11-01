@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ButtonLink } from "@/components/Button";
-import { HeroSlider } from "@/components/HeroSlider";
 import { NewsletterForm } from "@/components/NewsletterForm";
 import { ProductCard } from "@/components/ProductCard";
 import { Reveal } from "@/components/Reveal";
@@ -17,16 +16,16 @@ export default async function Home() {
 
   return (
     <div className="flex flex-col">
-      {/* Hero */}
-      <section className="mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-12 px-5 py-16 sm:px-8 lg:grid-cols-[1.1fr_.9fr]">
-        <Reveal>
-          <p className="eyebrow">مجموعة الخريف ٢٠٢٦</p>
-          <h1 className="mt-4 text-[44px] font-bold leading-[1.18] sm:text-[52px]">
+      {/* Hero — full-bleed editorial */}
+      <section className="relative grid w-full grid-cols-1 lg:grid-cols-2 lg:min-h-[88vh]">
+        <Reveal className="flex flex-col justify-center px-6 py-14 sm:px-10 lg:px-16 lg:py-0">
+          <p className="eyebrow">موسم الخريف — ٢٠٢٦</p>
+          <h1 className="mt-5 text-[42px] font-bold leading-[1.15] sm:text-[52px] lg:text-[60px]">
             العباية الجديدة.
             <br />
             أناقة مُعاد تعريفها.
           </h1>
-          <p className="t-soft mt-4 max-w-[46ch] text-[16px] leading-8">
+          <p className="t-soft mt-5 max-w-[42ch] text-[16px] leading-8">
             تصميم مدروس، أقمشة مختارة بعناية، وحرفية دقيقة في كل غرزة. هذه ليست مجرد عباية، إنها
             فلسفة في الأناقة.
           </p>
@@ -36,10 +35,22 @@ export default async function Home() {
               قصتنا
             </ButtonLink>
           </div>
+          <div className="mt-12 flex flex-wrap items-center gap-3 border-t border-[var(--glass-hairline)] pt-5 text-[11px] uppercase tracking-[0.14em] text-[var(--ink-faint)]">
+            <span className="brand-en">Uniflora Closet</span>
+            <span aria-hidden="true">·</span>
+            <span>حملة خاصة — عدد محدود</span>
+          </div>
         </Reveal>
 
-        <Reveal delay={120}>
-          <HeroSlider products={products} />
+        <Reveal delay={120} className="relative min-h-[58vh] sm:min-h-[68vh] lg:min-h-0">
+          <Image
+            src="/hero/uniflora-campaign.webp"
+            alt="حملة Uniflora Closet"
+            fill
+            sizes="(max-width: 1024px) 100vw, 50vw"
+            priority
+            className="object-cover object-[50%_18%]"
+          />
         </Reveal>
       </section>
 
