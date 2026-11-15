@@ -106,7 +106,7 @@ export default async function Home() {
           <Reveal delay={120} className="order-2 lg:order-1">
             <p className="eyebrow">{featured.category}</p>
             <h2 className="brand-en mt-2 text-[36px] font-semibold">{featured.name}</h2>
-            <p className="mt-4 max-w-[50ch] text-[15px] leading-8" style={{ color: "rgba(246,239,228,.74)" }}>
+            <p className="mt-4 max-w-[50ch] text-[15px] leading-8" style={{ color: "rgba(244,240,231,.8)" }}>
               {featured.tagline} {featured.description}
             </p>
             <div className="mt-6">
